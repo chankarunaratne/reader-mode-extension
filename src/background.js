@@ -1,7 +1,4 @@
-// src/background.js
 chrome.action.onClicked.addListener((tab) => {
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    files: ["src/content.js"],
-  });
+  console.log("Extension icon clicked");
+  chrome.tabs.sendMessage(tab.id, { action: "toggleReaderMode" });
 });
