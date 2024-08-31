@@ -24,17 +24,6 @@ function extractMainContent() {
 // Store the body content as text
 const pageBodyContent = extractMainContent();
 
-// Function to extract subheadings
-function extractSubheadings() {
-  const subheadings = document.querySelectorAll("h2");
-  return Array.from(subheadings)
-    .map((h) => h.textContent.trim())
-    .filter((text) => text.length > 0);
-}
-
-// Store the subheadings
-const pageSubheadings = extractSubheadings();
-
 // Create the overlay element
 const overlay = document.createElement("div");
 overlay.id = "reader-mode-overlay";
@@ -71,32 +60,13 @@ heading.style.cssText = `
   font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: 36px;
   line-height: 44px;
+  font-weight: 700;
   color: rgba(18, 18, 18, 0.87);
-  margin-bottom: 10px;
+  margin-top: 40px;
+  margin-bottom: 20px;
 `;
 
-// Create and add subheading if it exists
-if (pageSubheadings.length > 0) {
-  const subheadingElement = document.createElement("h2");
-  subheadingElement.textContent = pageSubheadings[0]; // Display the first h2
-  subheadingElement.style.cssText = `
-    font-size: 22px;
-    margin-bottom: 20px;
-    color: #666;
-  `;
-  contentContainer.appendChild(heading);
-  contentContainer.appendChild(subheadingElement);
-} else {
-  heading.style.marginBottom = "20px";
-  contentContainer.appendChild(heading);
-}
-
-// Adjust the content container to align items to the left
-contentContainer.style.cssText += `
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-`;
+contentContainer.appendChild(heading);
 
 // Create the body content element
 const bodyContent = document.createElement("div");
@@ -111,20 +81,14 @@ bodyContent.style.cssText = `
   overflow-wrap: break-word;
 `;
 
-// Add additional styles to ensure content wrapping
+// Add paragraph spacing styles
 const style = document.createElement("style");
 style.textContent = `
   #reader-mode-overlay p {
     margin-bottom: 1.5em;
-    max-width: 100%;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
   }
   #reader-mode-overlay {
     transition: top 0.5s ease-in-out;
-  }
-  #reader-mode-overlay.visible {
-    top: 0;
   }
 `;
 document.head.appendChild(style);
