@@ -8,17 +8,83 @@ const pageHeading =
   document.querySelector("#main-title")?.textContent ||
   document.title;
 
-// Function to extract main content
+// Function to extract main content including relevant images
 function extractMainContent() {
   const article =
     document.querySelector("article") ||
     document.querySelector("main") ||
     document.body;
-  const paragraphs = article.querySelectorAll("p");
-  return Array.from(paragraphs)
-    .map((p) => p.textContent.trim())
-    .filter((text) => text.length > 0)
-    .join("\n\n");
+
+  const contentNodes = article.querySelectorAll("p, img, figure");
+  let content = "";
+  const seenImages = new Set();
+  let isFirstImage = true;
+
+  contentNodes.forEach((node) => {
+    if (node.tagName === "P") {
+      content += `<p>${node.textContent.trim()}</p>`;
+    } else if (node.tagName === "IMG" || node.tagName === "FIGURE") {
+      if (!isIrrelevantImage(node)) {
+        let imgSrc = "";
+        let imgAlt = "";
+        let caption = "";
+
+        if (node.tagName === "IMG") {
+          imgSrc = node.src;
+          imgAlt = node.alt;
+        } else {
+          const img = node.querySelector("img");
+          if (img) {
+            imgSrc = img.src;
+            imgAlt = img.alt;
+            caption = node.querySelector("figcaption")?.textContent || "";
+          }
+        }
+
+        if (imgSrc && !seenImages.has(imgSrc)) {
+          seenImages.add(imgSrc);
+          const imgStyle = isFirstImage
+            ? "max-width: 700px; width: 100%; height: auto; margin: 1em auto; display: block;"
+            : "max-width: 100%; height: auto; margin: 1em 0;";
+
+          if (caption) {
+            content += `<figure style="margin: 1em auto; ${
+              isFirstImage ? "max-width: 700px;" : ""
+            }">
+              <img src="${imgSrc}" alt="${imgAlt}" style="${imgStyle}">
+              <figcaption style="font-size: 0.9em; color: #666; margin-top: 0.5em; text-align: center;">${caption}</figcaption>
+            </figure>`;
+          } else {
+            content += `<img src="${imgSrc}" alt="${imgAlt}" style="${imgStyle}">`;
+          }
+
+          isFirstImage = false;
+        }
+      }
+    }
+  });
+
+  return content;
+}
+
+// Helper function to check if an image is irrelevant
+function isIrrelevantImage(node) {
+  const irrelevantClasses = ["ad", "sidebar", "related", "promo", "thumbnail"];
+  const irrelevantIds = ["ad", "sidebar", "related", "promo"];
+
+  // Check if the node or its ancestors have irrelevant classes or ids
+  let current = node;
+  while (current && current !== document.body) {
+    if (
+      irrelevantClasses.some((cls) => current.className.includes(cls)) ||
+      irrelevantIds.some((id) => current.id.includes(id))
+    ) {
+      return true;
+    }
+    current = current.parentElement;
+  }
+
+  return false;
 }
 
 // Store the body content as text
@@ -63,17 +129,14 @@ heading.style.cssText = `
   font-weight: 700;
   color: rgba(18, 18, 18, 0.87);
   margin-top: 40px;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
 `;
 
 contentContainer.appendChild(heading);
 
-// Create the body content element
+// Modify the body content creation
 const bodyContent = document.createElement("div");
-bodyContent.innerHTML = pageBodyContent
-  .split("\n\n")
-  .map((p) => `<p>${p}</p>`)
-  .join("");
+bodyContent.innerHTML = extractMainContent();
 bodyContent.style.cssText = `
   font-size: 18px;
   width: 100%;
