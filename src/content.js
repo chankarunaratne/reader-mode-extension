@@ -66,7 +66,10 @@ contentContainer.style.cssText = `
 const heading = document.createElement("h1");
 heading.textContent = pageHeading;
 heading.style.cssText = `
-  font-size: 28px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 36px;
+  line-height: 48px;
+  color: rgba(18, 18, 18, 0.87);
   margin-bottom: 10px;
 `;
 
