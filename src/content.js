@@ -130,6 +130,10 @@ heading.style.cssText = `
   color: rgba(18, 18, 18, 0.87);
   margin-top: 40px;
   margin-bottom: 32px;
+  max-width: 700px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 contentContainer.appendChild(heading);
