@@ -83,7 +83,7 @@ document.head.appendChild(styles);
 const contentContainer = document.createElement("div");
 contentContainer.style.cssText = `
   max-width: 700px;
-  margin: 0 auto;
+  margin: 28px auto 0;
   padding: 0 20px;
   box-sizing: border-box;
 `;
@@ -97,6 +97,25 @@ function toggleOverlay() {
     if (!overlay.hasChildNodes()) {
       const article = extractContent();
 
+      // Create the website name element
+      const websiteName = document.createElement("p");
+      const url = new URL(document.location.href);
+      const domain = url.hostname.replace("www.", "");
+      websiteName.textContent = domain;
+      websiteName.style.cssText = `
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 400;
+        color: rgba(13, 14, 37, 0.6);
+        margin: 0 0 12px 0;
+        max-width: 700px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      `;
+      contentContainer.appendChild(websiteName);
+
       // Create the heading
       const heading = document.createElement("h1");
       heading.textContent = article.title;
@@ -106,7 +125,7 @@ function toggleOverlay() {
         line-height: 42px;
         font-weight: 600;
         color: #0D0E25;
-        margin-top: 40px;
+        margin-top: 0;
         margin-bottom: 32px;
         max-width: 700px;
         width: 100%;
