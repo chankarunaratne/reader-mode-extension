@@ -35,7 +35,7 @@ overlay.style.cssText = `
   width: 100%;
   height: 100%;
   background-color: #F8F9FB;
-  z-index: 9999;
+  z-index: 2147483647;
   overflow-y: auto;
   padding: 20px;
   box-sizing: border-box;
