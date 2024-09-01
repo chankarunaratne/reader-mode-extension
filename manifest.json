@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Minimal Extension",
+  "name": "Zenreader",
   "version": "1.0",
   "description": "A minimal Chrome extension setup.",
   "permissions": ["activeTab", "scripting"],
