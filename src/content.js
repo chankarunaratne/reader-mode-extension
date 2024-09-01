@@ -4,6 +4,24 @@ console.log("Content script loaded");
 function extractContent() {
   const documentClone = document.cloneNode(true);
   const article = new Readability(documentClone).parse();
+
+  // Remove metadata elements
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = article.content;
+
+  // Remove specific metadata elements (adjust selectors as needed)
+  tempDiv
+    .querySelectorAll(
+      '[data-component="byline-block"], [data-component="tag-list"], [data-component="topic-list"]'
+    )
+    .forEach((el) => el.remove());
+
+  // Remove any remaining metadata containers (adjust selector as needed)
+  tempDiv
+    .querySelectorAll(".metadata, .article-info")
+    .forEach((el) => el.remove());
+
+  article.content = tempDiv.innerHTML;
   return article;
 }
 
@@ -16,7 +34,7 @@ overlay.style.cssText = `
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #fff;
+  background-color: #F8F9FB;
   z-index: 9999;
   overflow-y: auto;
   padding: 20px;
@@ -24,14 +42,48 @@ overlay.style.cssText = `
   transition: top 0.5s ease-in-out;
 `;
 
+// Inject font-face styles and body text styles
+const styles = document.createElement("style");
+styles.textContent = `
+  @font-face {
+    font-family: 'General Sans';
+    src: url('${chrome.runtime.getURL(
+      "fonts/GeneralSans-Regular.otf"
+    )}') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'General Sans';
+    src: url('${chrome.runtime.getURL(
+      "fonts/GeneralSans-SemiBold.otf"
+    )}') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+  }
+  #reader-mode-overlay {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 26px;
+    color: #4F5667;
+  }
+  #reader-mode-overlay p {
+    margin-bottom: 1.5em;
+  }
+  #reader-mode-overlay img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1em auto;
+  }
+`;
+document.head.appendChild(styles);
+
 // Create the content container
 const contentContainer = document.createElement("div");
 contentContainer.style.cssText = `
   max-width: 700px;
   margin: 0 auto;
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  line-height: 1.6;
-  color: #333;
   padding: 0 20px;
   box-sizing: border-box;
 `;
@@ -44,28 +96,6 @@ function toggleOverlay() {
     overlay.style.top = "0px";
     if (!overlay.hasChildNodes()) {
       const article = extractContent();
-
-      // Inject font-face styles
-      const fontStyles = document.createElement("style");
-      fontStyles.textContent = `
-        @font-face {
-          font-family: 'General Sans';
-          src: url('${chrome.runtime.getURL(
-            "fonts/GeneralSans-Regular.otf"
-          )}') format('opentype');
-          font-weight: normal;
-          font-style: normal;
-        }
-        @font-face {
-          font-family: 'General Sans';
-          src: url('${chrome.runtime.getURL(
-            "fonts/GeneralSans-SemiBold.otf"
-          )}') format('opentype');
-          font-weight: 600;
-          font-style: normal;
-        }
-      `;
-      document.head.appendChild(fontStyles);
 
       // Create the heading
       const heading = document.createElement("h1");
@@ -89,26 +119,11 @@ function toggleOverlay() {
       const bodyContent = document.createElement("div");
       bodyContent.innerHTML = article.content;
       bodyContent.style.cssText = `
-        font-size: 18px;
-        width: 100%;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
+        font-family: 'Inter', sans-serif;
+        font-size: 16px;
+        line-height: 26px;
+        color: #4F5667;
       `;
-
-      // Add styles for paragraphs and images
-      const style = document.createElement("style");
-      style.textContent = `
-        #reader-mode-overlay p {
-          margin-bottom: 1.5em;
-        }
-        #reader-mode-overlay img {
-          max-width: 100%;
-          height: auto;
-          display: block;
-          margin: 1em auto;
-        }
-      `;
-      document.head.appendChild(style);
 
       contentContainer.appendChild(bodyContent);
       overlay.appendChild(contentContainer);
